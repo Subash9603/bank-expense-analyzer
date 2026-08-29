@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-wrapper d-flex align-items-center justify-content-center min-vh-100 px-3">
+    <div class="auth-card glass-panel w-100 p-4" style="max-width: 420px;">
+        <div class="text-center mb-4">
+            <div class="auth-logo mb-2">
+                <i class="fa-solid fa-wallet gradient-text fs-1"></i>
+            </div>
+            <h2 class="fw-bold tracking-tight mb-1">Create Account</h2>
+            <p class="text-secondary small">Start optimizing your financial wellness today</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show border-0 text-white bg-opacity-10 bg-{{ category }} mb-3" role="alert">
+                        <small>{{ message }}</small>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.75rem; padding: 1rem;"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('auth.register') }}" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label text-secondary small fw-medium">Full Name</label>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-dark-subtle text-secondary"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" class="form-control border-0 bg-dark-subtle text-white" id="name" name="name" required placeholder="John Doe">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label text-secondary small fw-medium">Email address</label>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-dark-subtle text-secondary"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" class="form-control border-0 bg-dark-subtle text-white" id="email" name="email" required placeholder="name@example.com">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="password" class="form-label text-secondary small fw-medium">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-dark-subtle text-secondary"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" class="form-control border-0 bg-dark-subtle text-white" id="password" name="password" required placeholder="Create strong password">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-3 fw-bold border-0 shadow-lg gradient-btn mb-3">
+                Register <i class="fa-solid fa-user-plus ms-1"></i>
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p class="text-secondary small mb-0">
+                Already registered? 
+                <a href="{{ url_for('auth.login') }}" class="gradient-text fw-semibold text-decoration-none">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

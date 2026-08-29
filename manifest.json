@@ -1,0 +1,27 @@
+{
+  "name": "AI Day-to-Day Expense Analyzer",
+  "short_name": "AI Expenses",
+  "description": "Gain control of your daily financial life with AI-driven expense categorization and insights.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#07080b",
+  "theme_color": "#ec4899",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/gradient/96/wallet.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "https://img.icons8.com/gradient/192/wallet.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://img.icons8.com/gradient/512/wallet.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

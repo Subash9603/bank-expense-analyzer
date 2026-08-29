@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-wrapper d-flex align-items-center justify-content-center min-vh-100 px-3">
+    <div class="auth-card glass-panel w-100 p-4" style="max-width: 420px;">
+        <div class="text-center mb-4">
+            <div class="auth-logo mb-2">
+                <i class="fa-solid fa-wallet gradient-text fs-1"></i>
+            </div>
+            <h2 class="fw-bold tracking-tight mb-1">AI Bank Analyzer</h2>
+            <p class="text-secondary small">Gain control of your daily financial life</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show border-0 text-white bg-opacity-10 bg-{{ category }} mb-3" role="alert">
+                        <small>{{ message }}</small>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.75rem; padding: 1rem;"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('auth.login') }}" method="POST">
+            <div class="mb-3">
+                <label for="email" class="form-label text-secondary small fw-medium">Email address</label>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-dark-subtle text-secondary"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" class="form-control border-0 bg-dark-subtle text-white" id="email" name="email" required placeholder="name@example.com">
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="password" class="form-label text-secondary small fw-medium mb-0">Password</label>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-dark-subtle text-secondary"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" class="form-control border-0 bg-dark-subtle text-white" id="password" name="password" required placeholder="Enter password">
+                </div>
+            </div>
+
+            <div class="mb-4 form-check d-flex align-items-center">
+                <input type="checkbox" class="form-check-input bg-dark border-0" id="remember" name="remember">
+                <label class="form-check-label text-secondary small ms-2" for="remember">Remember my session</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-3 fw-bold border-0 shadow-lg gradient-btn mb-3">
+                Sign In <i class="fa-solid fa-arrow-right-to-bracket ms-1"></i>
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p class="text-secondary small mb-0">
+                New to AI Bank Analyzer? 
+                <a href="{{ url_for('auth.register') }}" class="gradient-text fw-semibold text-decoration-none">Create Account</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

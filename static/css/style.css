@@ -1,0 +1,415 @@
+/* style.css - AI Bank Analyzer Premium UI */
+
+:root {
+    --bg-dark: #07080b;
+    --panel-dark: #111319;
+    --panel-dark-subtle: #191c25;
+    --border-dark: #222633;
+    
+    --primary-grad: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    --primary-color: #ec4899;
+    --secondary-color: #8b5cf6;
+    --accent-red: #ef4444;
+    
+    --text-white: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --font-outfit: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: #030406;
+    color: var(--text-white);
+    font-family: var(--font-outfit);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* App container that acts as a real mobile frame on desktop */
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    position: relative;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 481px) {
+    body {
+        background-color: #0c0e14;
+        background-image: radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 40%),
+                          radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+    }
+    .app-container {
+        min-height: 92vh;
+        height: 850px;
+        border-radius: 40px;
+        overflow: hidden;
+        border: 8px solid #1e2230;
+    }
+}
+
+/* Common UI Elements */
+.glass-panel {
+    background: rgba(25, 28, 37, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gradient-text {
+    background: var(--primary-grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradient-btn {
+    background: var(--primary-grad);
+    border: none;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.gradient-btn:hover {
+    opacity: 0.9;
+}
+
+.gradient-btn:active {
+    transform: scale(0.98);
+}
+
+/* Custom Alert Styling */
+.alert {
+    border-radius: 12px;
+}
+
+/* Auth Screens styling */
+.auth-wrapper {
+    background-color: var(--bg-dark);
+}
+
+.auth-card {
+    border-radius: 24px;
+}
+
+.input-group-text, .form-control, .form-select {
+    background-color: var(--panel-dark-subtle) !important;
+    color: var(--text-white) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Mobile Frame Internal Layout */
+.mobile-frame {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.app-header {
+    background-color: rgba(7, 8, 11, 0.85);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.profile-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.tabs-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 90px; /* Leave space for bottom nav */
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Balance Card */
+.balance-card {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    border: 1px solid rgba(236, 72, 153, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.balance-card h1 {
+    font-size: 2.85rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+/* Category Filter Buttons */
+.btn-category-filter {
+    background-color: var(--panel-dark);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-category-filter.active, .btn-category-filter:hover {
+    background-color: var(--panel-dark-subtle);
+    color: var(--text-white);
+    border-color: var(--primary-color);
+}
+
+/* Transaction List Items */
+.transaction-item {
+    background-color: var(--panel-dark);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.transaction-item:hover {
+    background-color: var(--panel-dark-subtle);
+    transform: translateY(-1px);
+}
+
+.transaction-item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.category-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+}
+
+.transaction-details h6 {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.transaction-details p {
+    margin-bottom: 0;
+    font-size: 0.75rem;
+}
+
+.transaction-item-right {
+    text-align: right;
+}
+
+.transaction-amount {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.transaction-amount.expense {
+    color: var(--text-white);
+}
+
+.transaction-amount.income {
+    color: #10b981;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+    background-color: rgba(17, 19, 25, 0.92);
+    backdrop-filter: blur(20px);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    z-index: 100;
+}
+
+.bottom-nav .nav-item {
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    transition: color 0.2s ease;
+    flex: 1;
+}
+
+.bottom-nav .nav-item i {
+    transition: transform 0.2s ease;
+}
+
+.bottom-nav .nav-item.active {
+    color: var(--primary-color);
+}
+
+.bottom-nav .nav-item.active i {
+    transform: translateY(-2px);
+}
+
+/* Floating FAB Action Button */
+.fab-btn {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-grad);
+    border: none;
+    border-radius: 50%;
+    margin-top: -36px;
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.4);
+    z-index: 110;
+    transition: transform 0.2s ease;
+}
+
+.fab-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.fab-btn:active {
+    transform: translateY(1px) scale(0.95);
+}
+
+/* Bottom Sheet Modal Styling */
+.bottom-sheet .modal-dialog {
+    align-items: flex-end;
+    display: flex;
+    min-height: 100%;
+}
+
+.bottom-sheet .modal-content {
+    border-radius: 32px 32px 0 0 !important;
+    background-color: var(--bg-dark) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-dark-pills {
+    background-color: var(--panel-dark);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.btn-dark-pills:hover {
+    background-color: var(--panel-dark-subtle);
+    color: var(--text-white);
+}
+
+/* Category Grid on Add Modal */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.category-item {
+    background-color: var(--panel-dark);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-item:hover {
+    background-color: var(--panel-dark-subtle);
+}
+
+.category-item.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(236, 72, 153, 0.08);
+}
+
+.category-item .icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.category-item span {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.category-item.selected span {
+    color: var(--text-white);
+}
+
+/* Chart styling */
+.chart-wrapper {
+    background-color: var(--panel-dark);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Stats Progress list */
+.progress-list-item {
+    background-color: var(--panel-dark-subtle);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.progress-bar-sm {
+    height: 6px !important;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+/* AI Financial Insights Cards */
+.insight-card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-grad);
+}

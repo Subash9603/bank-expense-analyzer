@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Day-to-Day Expense Analyzer</title>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ec4899">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Content (will show once authenticated) -->
+        <div class="mobile-frame d-none" id="mainAppContent">
+            <!-- Header -->
+            <header class="app-header d-flex justify-content-between align-items-center px-3 py-3 border-bottom border-dark">
+                <div>
+                    <h4 class="fw-bold tracking-tight text-white mb-0" id="headerTitle">Expenses</h4>
+                    <span class="badge text-bg-danger rounded-pill px-2 py-1 mt-1 text-uppercase" style="font-size: 0.55rem; font-weight: 800; letter-spacing: 0.05em;">Cinema Mode</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary small fw-medium" id="currentDateDisplay">Sat, 29 Aug</span>
+                    <div class="dropdown">
+                        <div class="profile-btn gradient-btn rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" id="profileMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            U
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg bg-dark" aria-labelledby="profileMenuButton">
+                            <li><h6 class="dropdown-header text-secondary" id="userNameHeader">User Profile</h6></li>
+                            <li><hr class="dropdown-divider border-dark"></li>
+                            <li><button class="dropdown-item text-danger" onclick="logoutUser()"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Logout</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Tabs Container -->
+            <div class="tabs-container">
+                <!-- Tab 1: HOME -->
+                <div id="tab-home" class="tab-pane active-tab px-3 py-3">
+                    <!-- Balance Card -->
+                    <div class="balance-card p-4 rounded-4 mb-4 text-center">
+                        <span class="text-secondary small fw-bold text-uppercase tracking-wider d-block mb-1">Expenses This Month</span>
+                        <h1 class="fw-extrabold text-white mb-2" id="monthlyTotalDisplay">₹0.00</h1>
+                        <span class="badge bg-dark-subtle text-secondary py-1.5 px-3 rounded-pill small" id="monthlyCountDisplay">0 transactions this month</span>
+                    </div>
+
+                    <!-- Filter by Category -->
+                    <div class="mb-4">
+                        <h6 class="text-uppercase tracking-widest text-secondary small fw-bold mb-3">Filter by Category</h6>
+                        <div class="d-flex gap-2 overflow-x-auto pb-2 scrollbar-hidden" id="categoryFilterContainer">
+                            <button class="btn btn-sm btn-category-filter active" data-category="all">All</button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions List -->
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-uppercase tracking-widest text-secondary small fw-bold mb-0">Recent Activity</h6>
+                            <button class="btn btn-link text-decoration-none text-secondary small p-0 fw-semibold" onclick="switchTab('history')">View History</button>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="homeEmptyState" class="text-center py-5 d-none">
+                            <div class="empty-state-icon mb-3">
+                                <i class="fa-solid fa-receipt text-secondary opacity-25 fs-1"></i>
+                            </div>
+                            <p class="text-secondary mb-1">No expenses logged for this period.</p>
+                            <p class="text-secondary small">Tap the bottom <strong class="text-white">+</strong> button to add one!</p>
+                        </div>
+
+                        <!-- Transaction List Group -->
+                        <div class="list-group list-group-flush gap-2" id="recentTransactionsList">
+                            <!-- Loaded dynamically -->
+                        </div>
+                        <div class="text-center text-secondary small mt-3 opacity-50">
+                            Tap an entry to edit · Long press to delete
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: HISTORY -->
+                <div id="tab-history" class="tab-pane d-none px-3 py-3">
+                    <!-- Search & Filters -->
+                    <div class="glass-panel p-3 rounded-4 mb-4">
+                        <div class="input-group mb-3 bg-dark-subtle rounded-3 overflow-hidden">
+                            <span class="input-group-text border-0 bg-transparent text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" class="form-control border-0 bg-transparent text-white" id="historySearch" placeholder="Search description...">
+                        </div>
+                        
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="date" class="form-control border-0 bg-dark-subtle text-white text-center py-2 rounded-3" id="historyStartDate">
+                            </div>
+                            <div class="col-6">
+                                <input type="date" class="form-control border-0 bg-dark-subtle text-white text-center py-2 rounded-3" id="historyEndDate">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-dark">
+                            <button class="btn btn-sm btn-outline-secondary border-0 px-3 py-1.5" id="clearFiltersBtn">
+                                <i class="fa-solid fa-rotate-left me-1"></i>Clear
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary border-0 px-3 py-1.5 gradient-text fw-bold" onclick="triggerCSVExport()">
+                                <i class="fa-solid fa-file-export me-1"></i>Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Full List -->
+                    <div class="mb-5">
+                        <div class="list-group list-group-flush gap-2" id="fullHistoryList">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: STATS -->
+                <div id="tab-stats" class="tab-pane d-none px-3 py-3">
+                    <div class="d-flex gap-2 mb-4 bg-dark-subtle p-1 rounded-pill">
+                        <button class="btn btn-sm flex-fill rounded-pill py-2 stats-toggle-btn active" data-chart="category">Category Breakdown</button>
+                        <button class="btn btn-sm flex-fill rounded-pill py-2 stats-toggle-btn" data-chart="trend">Daily Trend</button>
+                    </div>
+
+                    <!-- Category Breakdown Canvas -->
+                    <div class="chart-wrapper p-3 glass-panel rounded-4 mb-4 d-flex justify-content-center align-items-center" id="categoryChartContainer">
+                        <canvas id="categoryChart" style="max-height: 280px;"></canvas>
+                    </div>
+
+                    <!-- Daily Trend Canvas -->
+                    <div class="chart-wrapper p-3 glass-panel rounded-4 mb-4 d-none" id="trendChartContainer">
+                        <canvas id="trendChart" style="max-height: 280px;"></canvas>
+                    </div>
+
+                    <!-- Top Spending Summary -->
+                    <div class="glass-panel p-3 rounded-4 mb-5">
+                        <h6 class="text-uppercase tracking-widest text-secondary small fw-bold mb-3">Top Expenses by Category</h6>
+                        <div class="d-flex flex-column gap-3" id="statsList">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: PROFILE -->
+                <div id="tab-profile" class="tab-pane d-none px-3 py-3">
+                    <!-- User Info Card -->
+                    <div class="glass-panel p-4 rounded-4 mb-4 text-center">
+                        <div class="profile-avatar gradient-btn mx-auto mb-3 text-white d-flex align-items-center justify-content-center fw-bold" id="profileBigInitial" style="width: 72px; height: 72px; font-size: 2rem; border-radius: 50%;">
+                            U
+                        </div>
+                        <h4 class="fw-bold text-white mb-1" id="profileName">User Name</h4>
+                        <p class="text-secondary small mb-0" id="profileEmail">user@example.com</p>
+                    </div>
+
+                    <!-- AI Financial Insights -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-uppercase tracking-widest text-secondary small fw-bold mb-0">AI Financial Insights</h6>
+                            <button class="btn btn-link text-decoration-none text-secondary p-0 small fw-bold" id="refreshInsightsBtn">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1 gradient-text"></i>Refresh
+                            </button>
+                        </div>
+                        <div class="d-flex flex-column gap-3" id="aiInsightsContainer">
+                            <!-- insights loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Quick settings -->
+                    <div class="glass-panel p-3 rounded-4 mb-5">
+                        <h6 class="text-uppercase tracking-widest text-secondary small fw-bold mb-3">Application Management</h6>
+                        <div class="list-group list-group-flush gap-1">
+                            <button class="btn btn-outline-light text-start border-0 py-2.5 rounded-3 d-flex justify-content-between align-items-center" onclick="alert('PWA offline support enabled automatically!')">
+                                <span><i class="fa-solid fa-cloud-arrow-down me-2 text-secondary"></i>Offline Capability</span>
+                                <span class="badge text-bg-success rounded-pill px-2">Ready</span>
+                            </button>
+                            <button class="btn btn-outline-light text-start border-0 py-2.5 rounded-3 d-flex justify-content-between align-items-center" onclick="logoutUser()">
+                                <span class="text-danger"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out</span>
+                                <i class="fa-solid fa-chevron-right text-secondary small"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation Bar -->
+            <nav class="bottom-nav border-top border-dark d-flex align-items-center justify-content-around py-2 px-1">
+                <button class="nav-item btn text-center active" onclick="switchTab('home')" id="nav-home">
+                    <i class="fa-solid fa-house fs-5 mb-1 d-block"></i>
+                    <span class="small d-block">Home</span>
+                </button>
+                <button class="nav-item btn text-center" onclick="switchTab('history')" id="nav-history">
+                    <i class="fa-solid fa-clock-rotate-left fs-5 mb-1 d-block"></i>
+                    <span class="small d-block">History</span>
+                </button>
+                
+                <!-- Floating FAB Button -->
+                <button class="fab-btn btn rounded-circle text-white d-flex align-items-center justify-content-center shadow-lg" onclick="openAddModal()">
+                    <i class="fa-solid fa-plus fs-3"></i>
+                </button>
+
+                <button class="nav-item btn text-center" onclick="switchTab('stats')" id="nav-stats">
+                    <i class="fa-solid fa-chart-simple fs-5 mb-1 d-block"></i>
+                    <span class="small d-block">Stats</span>
+                </button>
+                <button class="nav-item btn text-center" onclick="switchTab('profile')" id="nav-profile">
+                    <i class="fa-solid fa-user fs-5 mb-1 d-block"></i>
+                    <span class="small d-block">Profile</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Modal: Add Expense Bottom Sheet -->
+    <div class="modal fade bottom-sheet" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-end m-0 w-100">
+            <div class="modal-content border-0 bg-black text-white rounded-top-5">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-plus gradient-text fs-4"></i>
+                        <div>
+                            <h5 class="modal-title fw-bold text-white mb-0" id="modalTitle">Add Expense</h5>
+                            <p class="text-secondary small mb-0">Enter details configuration</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body pt-3 pb-5">
+                    <form id="expenseForm">
+                        <input type="hidden" id="txnId">
+                        <input type="hidden" id="txnType" value="Expense">
+
+                        <!-- Receipt Upload / Voice entry tools -->
+                        <div class="d-flex gap-2 mb-3 bg-dark-subtle p-2 rounded-3 align-items-center justify-content-between">
+                            <span class="text-secondary small fw-medium">AI Tools:</span>
+                            <div class="d-flex gap-2">
+                                <!-- Voice Input -->
+                                <button type="button" class="btn btn-sm btn-dark text-white border-0 py-1.5 px-3 rounded-pill" id="voiceEntryBtn" onclick="simulateVoiceInput()">
+                                    <i class="fa-solid fa-microphone text-danger me-1"></i>Voice Log
+                                </button>
+                                <!-- Receipt Scanner -->
+                                <label class="btn btn-sm btn-dark text-white border-0 py-1.5 px-3 rounded-pill mb-0" style="cursor: pointer;">
+                                    <i class="fa-solid fa-camera gradient-text me-1"></i>OCR Scan
+                                    <input type="file" id="receiptScannerInput" accept="image/*" class="d-none" onchange="simulateOCR(this)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- OCR Scan Progress Indicator -->
+                        <div id="ocrProgress" class="d-none mb-3 bg-dark-subtle p-3 rounded-3 text-center">
+                            <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                            <p class="text-white small mb-1" id="ocrStatusText">Scanning receipt details...</p>
+                            <div class="progress bg-dark" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated gradient-btn" style="width: 0%" id="ocrProgressBar"></div>
+                            </div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Amount (₹)</label>
+                            <div class="input-group bg-dark-subtle rounded-3 overflow-hidden">
+                                <span class="input-group-text border-0 bg-transparent text-secondary fs-4">₹</span>
+                                <input type="text" class="form-control border-0 bg-transparent text-white fs-4 fw-bold py-2" id="amount" placeholder="0 or 20+30+40" required>
+                            </div>
+                            <!-- Rapid Buttons -->
+                            <div class="d-flex gap-1.5 overflow-x-auto py-2 scrollbar-hidden">
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(10)">+10</button>
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(20)">+20</button>
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(50)">+50</button>
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(100)">+100</button>
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(200)">+200</button>
+                                <button type="button" class="btn btn-sm btn-dark-pills px-3 py-1.5" onclick="addToAmount(500)">+500</button>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Description</label>
+                            <div class="input-group bg-dark-subtle rounded-3 overflow-hidden">
+                                <input type="text" class="form-control border-0 bg-transparent text-white py-2.5" id="description" placeholder="Lunch, movie, taxi, bills etc." required>
+                                <button type="button" class="btn btn-dark border-0 px-3" onclick="triggerAICategorization()" title="AI Parse Description">
+                                    <i class="fa-solid fa-wand-magic-sparkles gradient-text"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Date & Payment Method -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Date</label>
+                                <div class="d-flex gap-1.5">
+                                    <input type="date" class="form-control border-0 bg-dark-subtle text-white py-2 rounded-3 text-center" id="date" required>
+                                    <button type="button" class="btn btn-sm btn-dark border-0 px-2.5" onclick="setTodayDate()">Today</button>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Payment Method</label>
+                                <select class="form-select border-0 bg-dark-subtle text-white py-2 rounded-3" id="paymentMethod">
+                                    <option value="UPI" selected>UPI</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Category Selector Grid -->
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Category</label>
+                            <div class="category-grid" id="categoryGrid">
+                                <div class="category-item" data-category="Food">
+                                    <div class="icon-circle bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-utensils"></i></div>
+                                    <span>Food</span>
+                                </div>
+                                <div class="category-item" data-category="Groceries">
+                                    <div class="icon-circle bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-basket-shopping"></i></div>
+                                    <span>Groceries</span>
+                                </div>
+                                <div class="category-item" data-category="Shopping">
+                                    <div class="icon-circle bg-info bg-opacity-10 text-info"><i class="fa-solid fa-bag-shopping"></i></div>
+                                    <span>Shopping</span>
+                                </div>
+                                <div class="category-item" data-category="Travel">
+                                    <div class="icon-circle bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-plane"></i></div>
+                                    <span>Travel</span>
+                                </div>
+                                <div class="category-item" data-category="Transport">
+                                    <div class="icon-circle bg-success bg-opacity-10 text-success"><i class="fa-solid fa-car"></i></div>
+                                    <span>Transport</span>
+                                </div>
+                                <div class="category-item" data-category="Bills">
+                                    <div class="icon-circle bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                                    <span>Bills</span>
+                                </div>
+                                <div class="category-item" data-category="Rent">
+                                    <div class="icon-circle bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-house-chimney"></i></div>
+                                    <span>Rent</span>
+                                </div>
+                                <div class="category-item" data-category="Education">
+                                    <div class="icon-circle bg-info bg-opacity-10 text-info"><i class="fa-solid fa-graduation-cap"></i></div>
+                                    <span>Ed</span>
+                                </div>
+                                <div class="category-item" data-category="Entertainment">
+                                    <div class="icon-circle bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-ticket"></i></div>
+                                    <span>Ent.</span>
+                                </div>
+                                <div class="category-item" data-category="Health">
+                                    <div class="icon-circle bg-success bg-opacity-10 text-success"><i class="fa-solid fa-heart-pulse"></i></div>
+                                    <span>Health</span>
+                                </div>
+                                <div class="category-item" data-category="Other">
+                                    <div class="icon-circle bg-secondary bg-opacity-10 text-secondary"><i class="fa-solid fa-ellipsis"></i></div>
+                                    <span>Other</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold text-uppercase tracking-wider">Notes (Optional)</label>
+                            <textarea class="form-control border-0 bg-dark-subtle text-white rounded-3" id="notes" rows="2" placeholder="Add custom notes here..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold border-0 shadow-lg gradient-btn">
+                            Save Transaction <i class="fa-solid fa-circle-check ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Auth & Main JS -->
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Register PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('SW: Registered successfully', reg.scope))
+                    .catch(err => console.error('SW: Registration failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
